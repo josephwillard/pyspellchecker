@@ -26,7 +26,7 @@ class SpellChecker(object):
         self._word_frequency = WordFrequency()
         if local_dictionary:
             self._word_frequency.load_dictionary(local_dictionary)
-        if language:
+        elif language:
             filename = '{}.json.gz'.format(language)
             here = os.path.dirname(__file__)
             full_filename = os.path.join(here, 'resources', filename)
@@ -164,6 +164,21 @@ class SpellChecker(object):
             pass
 
         return True
+
+    def export(self, filepath, gzipped=True):
+        ''' Export the word frequency list for import in the future
+
+            Args:
+                filepath (str): The filepath to the exported dictionary
+                gzipped (bool): Whether to gzip the dictionary or not '''
+        data = json.dumps(self.word_frequency.dictionary, sort_keys=True)
+        if gzipped:
+            with gzip.open(filepath, 'wt') as fobj:
+                fobj.write(data)
+        else:
+            with open(filepath, 'w') as fobj:
+                fobj.write(data)
+
 
 class WordFrequency(object):
     ''' Store the `dictionary` as a word frequency list while allowing for
